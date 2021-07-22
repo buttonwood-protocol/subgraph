@@ -1,8 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../generated/BondFactory/BondFactory";
+import { ERC20 } from "../../generated/BondFactory/ERC20";
 import { Bond, Factory, Token } from "../../generated/schema";
 import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
-import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from "../utils/token";
+import { fetchTokenSymbol, fetchTokenName } from "../utils/token";
 import { ZERO_BI } from "../utils/constants";
 
 export function handleBondCreated(event: BondCreated): void {
@@ -67,8 +68,9 @@ function buildToken(address: Address): Token | null {
     token = new Token(address.toHexString());
     token.symbol = fetchTokenSymbol(address);
     token.name = fetchTokenName(address);
-    token.decimals = fetchTokenDecimals(address);
-    token.totalSupply = fetchTokenTotalSupply(address);
+    let erc20 = ERC20.bind(address);
+    token.decimals = BigInt.fromI32(erc20.decimals());
+    token.totalSupply = erc20.totalSupply();
   }
   return token;
 }

@@ -1,0 +1,74 @@
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BondCreated } from "../../generated/BondFactory/BondFactory";
+import { Bond, Factory, Token } from "../../generated/schema";
+import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
+import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from "../utils/token";
+import { ZERO_BI } from "../utils/constants";
+
+export function handleBondCreated(event: BondCreated): void {
+  // Entities can be loaded from the store using a string ID; this ID
+  // needs to be unique across all entities of the same type
+  let factory = Factory.load(event.address.toHex());
+
+  // Entities only exist after they have been saved to the store;
+  // `null` checks allow to create entities on demand
+  if (factory == null) {
+    factory = new Factory(event.address.toHex());
+
+    // Entity fields can be set using simple assignments
+    factory.bondCount = BigInt.fromI32(0);
+  }
+
+  factory.bondCount = factory.bondCount.plus(BigInt.fromI32(1));
+
+  // Entity fields can be set based on event parameters
+  let bondAddress = event.params.newBondAddress;
+  let bond = buildBond(bondAddress, event);
+
+  bond.save();
+  factory.save();
+}
+
+/**
+ * Build a bond object from the given address and log event
+ */
+function buildBond(bondAddress: Address, event: BondCreated): Bond {
+  let bond = new Bond(bondAddress.toHexString());
+  bond.isMature = false;
+  bond.totalDebt = ZERO_BI;
+  bond.totalCollateral = ZERO_BI;
+  bond.owner = event.transaction.from.toHex();
+  bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
+
+  let collateral = buildToken(Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address);
+  bond.collateral = collateral.id;
+  collateral.save();
+
+  let tranches: string[] = [];
+  for (let i = 0; i < fetchTrancheCount(bondAddress); i++) {
+    let tranche = fetchTranche(bondAddress, i);
+    let trancheToken = buildToken(Address.fromHexString(tranche.id) as Address);
+
+    tranches.push(tranche.id);
+    trancheToken.save();
+    tranche.save();
+  }
+  bond.tranches = tranches;
+
+  return bond;
+}
+
+/**
+ * Build a token object from the given token address
+ */
+function buildToken(address: Address): Token | null {
+  let token = Token.load(address.toHexString());
+  if (token == null) {
+    token = new Token(address.toHexString());
+    token.symbol = fetchTokenSymbol(address);
+    token.name = fetchTokenName(address);
+    token.decimals = fetchTokenDecimals(address);
+    token.totalSupply = fetchTokenTotalSupply(address);
+  }
+  return token;
+}

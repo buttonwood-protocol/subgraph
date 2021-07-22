@@ -1,0 +1,46 @@
+type Factory @entity {
+  id: ID!
+  # number of pools created
+  bondCount: BigInt!
+}
+
+
+type Token @entity {
+  # token address
+  id: ID!
+  # token symbol
+  symbol: String!
+  # token name
+  name: String!
+  # token decimals
+  decimals: BigInt!
+  # token total supply
+  totalSupply: BigInt!
+}
+
+type Tranche @entity {
+  id: ID!
+  # reference to the tranche token contract
+  token: Token!
+  # ratio of this tranche as a proportion of the total
+  ratio: BigDecimal!
+}
+
+type Bond @entity {
+  # bond address
+  id: ID!
+  # address of the owner
+  owner: String!
+  # reference to the collateral token
+  collateral: Token!
+  # The tranches and ratios in a list
+  tranches: [Tranche]!
+  # date of maturity as a unix timestamp
+  maturityDate: BigInt!
+  # true if this bond is mature, else false
+  isMature: Boolean!
+  # Total amount of debt distributed. Equal to the sum of tranche total supplies
+  totalDebt: BigInt!
+  # The amount of collateral locked in this bond
+  totalCollateral: BigInt!
+}

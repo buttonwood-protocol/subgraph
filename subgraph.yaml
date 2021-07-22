@@ -1,0 +1,101 @@
+specVersion: 0.0.2
+description: Buttonwood Tranche is a protocol for price risk stratification of assets on Ethereum
+repository: https://github.com/buttonwood-protocol/subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: BondFactory
+    network: kovan
+    source:
+      address: "0x5c9ab9d2f20be061a42d86ad04951112e895c7bb"
+      abi: BondFactory
+      startBlock: 26300700
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - BondCreated
+      abis:
+        - name: BondFactory
+          file: ./abis/BondFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: BondController
+          file: ./abis/BondController.json
+      eventHandlers:
+        - event: BondCreated(address)
+          handler: handleBondCreated
+      file: ./src/mappings/bondFactory.ts
+templates:
+  - kind: ethereum/contract
+    name: BondController
+    network: kovan
+    source:
+      abi: BondController
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Deposit
+        - Mature
+        - Redeem
+        - RedeemMature
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+      abis:
+        - name: BondController
+          file: ./abis/BondController.json
+      eventHandlers:
+        - event: Deposit(address,uint256)
+          handler: handleDeposit
+        - event: Mature(address)
+          handler: handleMature
+        - event: Redeem(address,uint256[])
+          handler: handleRedeem
+        - event: RedeemMature(address,address,uint256)
+          handler: handleRedeemMature
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/mappings/bond.ts
+  - kind: ethereum/contract
+    name: Tranche
+    network: kovan
+    source:
+      abi: Tranche
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - Transfer
+      abis:
+        - name: Tranche
+          file: ./abis/Tranche.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mappings/tranche.ts

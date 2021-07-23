@@ -34,7 +34,7 @@ dataSources:
       file: ./src/mappings/bondFactory.ts
 templates:
   - kind: ethereum/contract
-    name: BondController
+    name: BondTemplate
     network: kovan
     source:
       abi: BondController
@@ -53,6 +53,12 @@ templates:
       abis:
         - name: BondController
           file: ./abis/BondController.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
       eventHandlers:
         - event: Deposit(address,uint256)
           handler: handleDeposit
@@ -70,7 +76,7 @@ templates:
           handler: handleRoleRevoked
       file: ./src/mappings/bond.ts
   - kind: ethereum/contract
-    name: Tranche
+    name: TrancheTemplate
     network: kovan
     source:
       abi: Tranche

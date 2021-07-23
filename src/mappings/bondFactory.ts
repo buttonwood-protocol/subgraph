@@ -1,5 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../generated/BondFactory/BondFactory";
+import { BondTemplate } from "../../generated/templates";
 import { ERC20 } from "../../generated/BondFactory/ERC20";
 import { Bond, Factory, Token } from "../../generated/schema";
 import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
@@ -24,21 +25,22 @@ export function handleBondCreated(event: BondCreated): void {
 
   // Entity fields can be set based on event parameters
   let bondAddress = event.params.newBondAddress;
-  let bond = buildBond(bondAddress, event);
+  let bond = buildBond(bondAddress);
+  bond.owners = [event.transaction.from.toHexString()];
 
   bond.save();
+  BondTemplate.create(bondAddress);
   factory.save();
 }
 
 /**
  * Build a bond object from the given address and log event
  */
-function buildBond(bondAddress: Address, event: BondCreated): Bond {
+export function buildBond(bondAddress: Address): Bond {
   let bond = new Bond(bondAddress.toHexString());
   bond.isMature = false;
   bond.totalDebt = ZERO_BI;
   bond.totalCollateral = ZERO_BI;
-  bond.owner = event.transaction.from.toHex();
   bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
 
   let collateral = buildToken(Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address);

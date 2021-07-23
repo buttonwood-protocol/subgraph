@@ -166,6 +166,15 @@ export class Tranche extends Entity {
   set ratio(value: BigDecimal) {
     this.set("ratio", Value.fromBigDecimal(value));
   }
+
+  get index(): BigInt {
+    let value = this.get("index");
+    return value.toBigInt();
+  }
+
+  set index(value: BigInt) {
+    this.set("index", Value.fromBigInt(value));
+  }
 }
 
 export class Bond extends Entity {
@@ -198,13 +207,13 @@ export class Bond extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get owner(): string {
-    let value = this.get("owner");
-    return value.toString();
+  get owners(): Array<string | null> {
+    let value = this.get("owners");
+    return value.toStringArray();
   }
 
-  set owner(value: string) {
-    this.set("owner", Value.fromString(value));
+  set owners(value: Array<string | null>) {
+    this.set("owners", Value.fromStringArray(value));
   }
 
   get collateral(): string {

@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, Bytes, BigInt } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   Mature,
@@ -7,65 +7,79 @@ import {
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
-} from "../../generated/templates/BondController/BondController";
-import { Bond } from "../../generated/schema";
+} from "../../generated/templates/BondTemplate/BondController";
+import { ERC20 } from '../../generated/BondFactory/ERC20';
+import { Bond, Token } from "../../generated/schema";
+import { buildBond } from './bondFactory';
+import { BYTES32_ZERO } from '../utils/constants';
+import { fetchTotalDebt } from '../utils/bond';
 
 export function handleDeposit(event: Deposit): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = Bond.load(event.transaction.from.toHex());
-
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new Bond(event.transaction.from.toHex());
-
-    // Entity fields can be set using simple assignments
-    // entity.count = BigInt.fromI32(0)
-  }
-
-  // Entity fields can be set based on event parameters
-  entity.owner = event.params.from.toHexString();
-
-  // Entities can be written to the store with `.save()`
-  entity.save();
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.DEFAULT_ADMIN_ROLE(...)
-  // - contract.collateralToken(...)
-  // - contract.getRoleAdmin(...)
-  // - contract.hasRole(...)
-  // - contract.isMature(...)
-  // - contract.maturityDate(...)
-  // - contract.supportsInterface(...)
-  // - contract.totalDebt(...)
-  // - contract.trancheCount(...)
-  // - contract.trancheTokenAddresses(...)
-  // - contract.tranches(...)
+  let bondAddress = event.address;
+  let bond = updateBond(getBond(bondAddress))
+  bond.save();
 }
 
-export function handleMature(event: Mature): void {}
+export function handleMature(event: Mature): void {
+  let bond = getBond(event.address);
+  bond.isMature = true;
+  bond.save();
+}
 
-export function handleRedeem(event: Redeem): void {}
+export function handleRedeem(event: Redeem): void {
+  let bondAddress = event.address;
+  let bond = updateBond(getBond(bondAddress))
+  bond.save();
+}
 
-export function handleRedeemMature(event: RedeemMature): void {}
+export function handleRedeemMature(event: RedeemMature): void {
+  let bondAddress = event.address;
+  let bond = updateBond(getBond(bondAddress))
+  bond.save();
+}
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
 
-export function handleRoleGranted(event: RoleGranted): void {}
+export function handleRoleGranted(event: RoleGranted): void {
+  if (event.params.role === Bytes.fromHexString(BYTES32_ZERO)) {
+    let bond = getBond(event.address);
+    bond.owners.push(event.params.account.toHexString());
+    bond.save();
+  }
+}
 
-export function handleRoleRevoked(event: RoleRevoked): void {}
+export function handleRoleRevoked(event: RoleRevoked): void {
+  if (event.params.role === Bytes.fromHexString(BYTES32_ZERO)) {
+    let bond = getBond(event.address);
+    bond.owners.splice(bond.owners.indexOf(event.params.account.toHexString(), 1));
+    bond.save();
+  }
+}
+
+function updateBond(bond: Bond): Bond {
+  let bondAddress = Address.fromHexString(bond.id) as Address
+  bond.totalDebt = fetchTotalDebt(bondAddress);
+  bond.totalCollateral = ERC20.bind(Address.fromHexString(bond.collateral) as Address).balanceOf(bondAddress);
+  let collateral = Token.load(bond.collateral);
+  collateral.totalSupply = ERC20.bind(Address.fromHexString(bond.collateral) as Address).totalSupply();
+  collateral.save();
+  
+  let tranches = bond.tranches;
+  for (let i = 0; i < tranches.length; i++) {
+    let trancheAddress = tranches[i];
+    let trancheToken = Token.load(trancheAddress);
+    trancheToken.totalSupply = ERC20.bind(Address.fromHexString(trancheAddress) as Address).totalSupply();
+    trancheToken.save();
+  }
+  return bond;
+}
+
+function getBond(address: Address): Bond {
+  let bond = Bond.load(address.toHexString());
+
+  if (bond !== null) {
+      return bond!
+  } else {
+    return buildBond(address)
+  }
+}

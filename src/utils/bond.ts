@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
-import { BondController } from "../../generated/templates/BondController/BondController";
+import { BondController } from "../../generated/templates/BondTemplate/BondController";
 import { Tranche } from "../../generated/schema";
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { ADDRESS_ZERO } from "./constants";
+import { ADDRESS_ZERO, ZERO_BI } from "./constants";
 
 export function fetchCollateralTokenAddress(bondAddress: Address): string {
   let contract = BondController.bind(bondAddress);
@@ -28,6 +28,18 @@ export function fetchTrancheCount(bondAddress: Address): number {
   return trancheCount;
 }
 
+export function fetchTotalDebt(bondAddress: Address): BigInt {
+  let contract = BondController.bind(bondAddress);
+
+  let totalDebt = ZERO_BI;
+  let totalDebtResult = contract.try_totalDebt();
+  if (!totalDebtResult.reverted) {
+    totalDebt = totalDebtResult.value;
+  }
+
+  return totalDebt;
+}
+
 export function fetchMaturityDate(bondAddress: Address): number {
   let contract = BondController.bind(bondAddress);
 
@@ -48,6 +60,7 @@ export function fetchTranche(bondAddress: Address, i: number): Tranche {
   if (!trancheResult.reverted) {
     let trancheAddress = trancheResult.value.value0.toHexString();
     tranche = new Tranche(trancheAddress);
+    tranche.index = BigInt.fromI32(i as i32)
     tranche.token = trancheAddress;
     tranche.ratio = BigDecimal.fromString(trancheResult.value.value1.toString());
   } else {

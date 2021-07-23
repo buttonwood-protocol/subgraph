@@ -24,13 +24,15 @@ type Tranche @entity {
   token: Token!
   # ratio of this tranche as a proportion of the total
   ratio: BigDecimal!
+  # index of this tranche, i.e. A-tranche is 0, B is 1 and so on
+  index: BigInt!
 }
 
 type Bond @entity {
   # bond address
   id: ID!
   # address of the owner
-  owner: String!
+  owners: [String]!
   # reference to the collateral token
   collateral: Token!
   # The tranches and ratios in a list

@@ -6,26 +6,30 @@ import {
   DataSourceContext
 } from "@graphprotocol/graph-ts";
 
-export class BondController extends DataSourceTemplate {
+export class BondTemplate extends DataSourceTemplate {
   static create(address: Address): void {
-    DataSourceTemplate.create("BondController", [address.toHex()]);
+    DataSourceTemplate.create("BondTemplate", [address.toHex()]);
   }
 
   static createWithContext(address: Address, context: DataSourceContext): void {
     DataSourceTemplate.createWithContext(
-      "BondController",
+      "BondTemplate",
       [address.toHex()],
       context
     );
   }
 }
 
-export class Tranche extends DataSourceTemplate {
+export class TrancheTemplate extends DataSourceTemplate {
   static create(address: Address): void {
-    DataSourceTemplate.create("Tranche", [address.toHex()]);
+    DataSourceTemplate.create("TrancheTemplate", [address.toHex()]);
   }
 
   static createWithContext(address: Address, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext("Tranche", [address.toHex()], context);
+    DataSourceTemplate.createWithContext(
+      "TrancheTemplate",
+      [address.toHex()],
+      context
+    );
   }
 }

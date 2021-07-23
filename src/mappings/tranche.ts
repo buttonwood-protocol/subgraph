@@ -5,7 +5,7 @@ import {
   RoleGranted,
   RoleRevoked,
   Transfer,
-} from "../../generated/templates/Tranche/Tranche";
+} from "../../generated/templates/TrancheTemplate/Tranche";
 import { Tranche } from "../../generated/schema";
 
 export function handleApproval(event: Approval): void {

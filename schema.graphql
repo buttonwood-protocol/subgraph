@@ -26,6 +26,8 @@ type Tranche @entity {
   ratio: BigDecimal!
   # index of this tranche, i.e. A-tranche is 0, B is 1 and so on
   index: BigInt!
+  # The amount of collateral in this tranche for redemption
+  totalCollateral: BigInt!
 }
 
 type Bond @entity {

@@ -175,6 +175,15 @@ export class Tranche extends Entity {
   set index(value: BigInt) {
     this.set("index", Value.fromBigInt(value));
   }
+
+  get totalCollateral(): BigInt {
+    let value = this.get("totalCollateral");
+    return value.toBigInt();
+  }
+
+  set totalCollateral(value: BigInt) {
+    this.set("totalCollateral", Value.fromBigInt(value));
+  }
 }
 
 export class Bond extends Entity {

@@ -2,6 +2,7 @@
 import { BondController } from "../../generated/templates/BondTemplate/BondController";
 import { Tranche } from "../../generated/schema";
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { ERC20 } from '../../generated/BondFactory/ERC20';
 import { ADDRESS_ZERO, ZERO_BI } from "./constants";
 
 export function fetchCollateralTokenAddress(bondAddress: Address): string {
@@ -52,7 +53,7 @@ export function fetchMaturityDate(bondAddress: Address): number {
   return maturityDate;
 }
 
-export function fetchTranche(bondAddress: Address, i: number): Tranche {
+export function fetchTranche(bondAddress: Address, collateral: string, i: number): Tranche {
   let contract = BondController.bind(bondAddress);
 
   let tranche: Tranche | null = null;
@@ -63,6 +64,7 @@ export function fetchTranche(bondAddress: Address, i: number): Tranche {
     tranche.index = BigInt.fromI32(i as i32)
     tranche.token = trancheAddress;
     tranche.ratio = BigDecimal.fromString(trancheResult.value.value1.toString());
+    tranche.totalCollateral = ERC20.bind(Address.fromHexString(collateral) as Address).balanceOf(Address.fromHexString(trancheAddress) as Address);
   } else {
     throw new Error("Unable to fetch tranche");
   }

@@ -49,7 +49,7 @@ export function buildBond(bondAddress: Address): Bond {
 
   let tranches: string[] = [];
   for (let i = 0; i < fetchTrancheCount(bondAddress); i++) {
-    let tranche = fetchTranche(bondAddress, i);
+    let tranche = fetchTranche(bondAddress, bond.collateral, i);
     let trancheToken = buildToken(Address.fromHexString(tranche.id) as Address);
 
     tranches.push(tranche.id);

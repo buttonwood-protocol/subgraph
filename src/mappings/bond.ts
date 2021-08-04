@@ -1,4 +1,4 @@
-import { Address, Bytes, BigInt } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   Mature,
@@ -9,7 +9,7 @@ import {
   RoleRevoked,
 } from "../../generated/templates/BondTemplate/BondController";
 import { ERC20 } from '../../generated/BondFactory/ERC20';
-import { Bond, Token } from "../../generated/schema";
+import { Bond, Tranche, Token } from "../../generated/schema";
 import { buildBond } from './bondFactory';
 import { BYTES32_ZERO } from '../utils/constants';
 import { fetchTotalDebt } from '../utils/bond';
@@ -21,7 +21,7 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleMature(event: Mature): void {
-  let bond = getBond(event.address);
+  let bond = updateBond(getBond(event.address))
   bond.isMature = true;
   bond.save();
 }
@@ -67,9 +67,12 @@ function updateBond(bond: Bond): Bond {
   let tranches = bond.tranches;
   for (let i = 0; i < tranches.length; i++) {
     let trancheAddress = tranches[i];
+    let tranche = Tranche.load(trancheAddress);
     let trancheToken = Token.load(trancheAddress);
     trancheToken.totalSupply = ERC20.bind(Address.fromHexString(trancheAddress) as Address).totalSupply();
     trancheToken.save();
+    tranche.totalCollateral = ERC20.bind(Address.fromHexString(bond.collateral) as Address).balanceOf(Address.fromHexString(trancheAddress) as Address);
+    tranche.save();
   }
   return bond;
 }

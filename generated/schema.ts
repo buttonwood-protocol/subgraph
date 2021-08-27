@@ -149,6 +149,15 @@ export class Tranche extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get bond(): string {
+    let value = this.get("bond");
+    return value.toString();
+  }
+
+  set bond(value: string) {
+    this.set("bond", Value.fromString(value));
+  }
+
   get token(): string {
     let value = this.get("token");
     return value.toString();
@@ -277,5 +286,154 @@ export class Bond extends Entity {
 
   set totalCollateral(value: BigInt) {
     this.set("totalCollateral", Value.fromBigInt(value));
+  }
+}
+
+export class Account extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Account entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Account entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Account", id.toString(), this);
+  }
+
+  static load(id: string): Account | null {
+    return store.get("Account", id) as Account | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get balances(): Array<string> {
+    let value = this.get("balances");
+    return value.toStringArray();
+  }
+
+  set balances(value: Array<string>) {
+    this.set("balances", Value.fromStringArray(value));
+  }
+}
+
+export class AccountBalance extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save AccountBalance entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save AccountBalance entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("AccountBalance", id.toString(), this);
+  }
+
+  static load(id: string): AccountBalance | null {
+    return store.get("AccountBalance", id) as AccountBalance | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get account(): string {
+    let value = this.get("account");
+    return value.toString();
+  }
+
+  set account(value: string) {
+    this.set("account", Value.fromString(value));
+  }
+
+  get tranche(): string {
+    let value = this.get("tranche");
+    return value.toString();
+  }
+
+  set tranche(value: string) {
+    this.set("tranche", Value.fromString(value));
+  }
+
+  get amount(): BigDecimal {
+    let value = this.get("amount");
+    return value.toBigDecimal();
+  }
+
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
+  }
+
+  get block(): BigInt | null {
+    let value = this.get("block");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set block(value: BigInt | null) {
+    if (value === null) {
+      this.unset("block");
+    } else {
+      this.set("block", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get modified(): BigInt | null {
+    let value = this.get("modified");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set modified(value: BigInt | null) {
+    if (value === null) {
+      this.unset("modified");
+    } else {
+      this.set("modified", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get transaction(): Bytes | null {
+    let value = this.get("transaction");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transaction(value: Bytes | null) {
+    if (value === null) {
+      this.unset("transaction");
+    } else {
+      this.set("transaction", Value.fromBytes(value as Bytes));
+    }
   }
 }

@@ -2,6 +2,7 @@
 import { ERC20 } from "../../generated/BondFactory/ERC20";
 import { ERC20SymbolBytes } from "../../generated/BondFactory/ERC20SymbolBytes";
 import { ERC20NameBytes } from "../../generated/BondFactory/ERC20NameBytes";
+import { Token } from "../../generated/schema";
 import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { isNullEthValue } from ".";
 
@@ -47,4 +48,21 @@ export function fetchTokenName(tokenAddress: Address): string {
   }
 
   return nameValue;
+}
+
+
+/**
+ * Build a token object from the given token address
+ */
+export function buildToken(address: Address): Token | null {
+  let token = Token.load(address.toHexString());
+  if (token == null) {
+    token = new Token(address.toHexString());
+    token.symbol = fetchTokenSymbol(address);
+    token.name = fetchTokenName(address);
+    let erc20 = ERC20.bind(address);
+    token.decimals = BigInt.fromI32(erc20.decimals());
+    token.totalSupply = erc20.totalSupply();
+  }
+  return token;
 }

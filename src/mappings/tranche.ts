@@ -1,71 +1,71 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
-  Approval,
-  RoleAdminChanged,
-  RoleGranted,
-  RoleRevoked,
-  Transfer,
+    Transfer,
 } from "../../generated/templates/TrancheTemplate/Tranche";
-import { Tranche } from "../../generated/schema";
+import { Account, AccountBalance, Token } from "../../generated/schema";
+import { buildToken } from '../utils/token';
+import { isNullAddress, toDecimal } from '../utils';
 
-export function handleApproval(event: Approval): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = Tranche.load(event.transaction.from.toHex());
+export function handleTransfer(event: Transfer): void {
+    let from = event.params.from;
+    let to = event.params.to;
+    let token = Token.load(event.address.toHex())
 
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new Tranche(event.transaction.from.toHex());
+    if (!token) {
+        token = buildToken(event.address);
+        token.save();
+    }
 
-    // Entity fields can be set using simple assignments
-    // entity.count = BigInt.fromI32(0)
-  }
+    let amount = toDecimal(event.params.value, token.decimals.toI32());
 
-  // Entity fields can be set based on event parameters
-  // entity.owner = event.params.owner
-  // entity.spender = event.params.spender
+    if (!isNullAddress(from)) {
+        let fromAccount = getOrCreateAccount(from);
+        let fromAccountBalance = getOrCreateAccountBalance(fromAccount, token!);
+        fromAccountBalance.amount = fromAccountBalance.amount.minus(amount);
+        fromAccountBalance.block = event.block.number
+        fromAccountBalance.modified = event.block.timestamp
+        fromAccountBalance.transaction = event.transaction.hash
+        fromAccountBalance.save();
+        fromAccount.save();
+    }
 
-  // Entities can be written to the store with `.save()`
-  entity.save();
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.DEFAULT_ADMIN_ROLE(...)
-  // - contract.allowance(...)
-  // - contract.approve(...)
-  // - contract.balanceOf(...)
-  // - contract.collateralToken(...)
-  // - contract.decimals(...)
-  // - contract.decreaseAllowance(...)
-  // - contract.getRoleAdmin(...)
-  // - contract.hasRole(...)
-  // - contract.increaseAllowance(...)
-  // - contract.name(...)
-  // - contract.supportsInterface(...)
-  // - contract.symbol(...)
-  // - contract.totalSupply(...)
-  // - contract.transfer(...)
-  // - contract.transferFrom(...)
+    if (!isNullAddress(to)) {
+        let toAccount = getOrCreateAccount(to);
+        let toAccountBalance = getOrCreateAccountBalance(toAccount, token!);
+        toAccountBalance.amount = toAccountBalance.amount.plus(amount);
+        toAccountBalance.block = event.block.number
+        toAccountBalance.modified = event.block.timestamp
+        toAccountBalance.transaction = event.transaction.hash
+        toAccountBalance.save();
+        toAccount.save();
+    }
 }
 
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
+export function getOrCreateAccount(accountAddress: Address): Account {
+    let id = accountAddress.toHexString();
+    let existingAccount = Account.load(id);
 
-export function handleRoleGranted(event: RoleGranted): void {}
+    if (existingAccount !== null) {
+        return existingAccount!;
+    }
 
-export function handleRoleRevoked(event: RoleRevoked): void {}
+    let newAccount = new Account(id);
 
-export function handleTransfer(event: Transfer): void {}
+    return newAccount
+}
+
+export function getOrCreateAccountBalance(account: Account, token: Token): AccountBalance {
+    let id = account.id + '-' + token.id;
+    let existingBalance = AccountBalance.load(id);
+
+    if (existingBalance !== null) {
+        return existingBalance!;
+    }
+
+    let newBalance = new AccountBalance(id);
+    newBalance.account = account.id;
+    newBalance.tranche = token.id;
+    newBalance.amount = BigInt.fromI32(0).toBigDecimal()
+
+    return newBalance
+}

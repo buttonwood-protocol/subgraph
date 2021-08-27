@@ -61,6 +61,7 @@ export function fetchTranche(bondAddress: Address, collateral: string, i: number
   if (!trancheResult.reverted) {
     let trancheAddress = trancheResult.value.value0.toHexString();
     tranche = new Tranche(trancheAddress);
+    tranche.bond = bondAddress.toHexString();
     tranche.index = BigInt.fromI32(i as i32)
     tranche.token = trancheAddress;
     tranche.ratio = BigDecimal.fromString(trancheResult.value.value1.toString());

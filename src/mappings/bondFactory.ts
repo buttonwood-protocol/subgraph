@@ -1,10 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../generated/BondFactory/BondFactory";
-import { BondTemplate } from "../../generated/templates";
-import { ERC20 } from "../../generated/BondFactory/ERC20";
-import { Bond, Factory, Token } from "../../generated/schema";
+import { BondTemplate, TrancheTemplate } from "../../generated/templates";
+import { Bond, Factory } from "../../generated/schema";
 import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
-import { fetchTokenSymbol, fetchTokenName } from "../utils/token";
+import { buildToken } from "../utils/token";
 import { ZERO_BI } from "../utils/constants";
 
 export function handleBondCreated(event: BondCreated): void {
@@ -54,25 +53,10 @@ export function buildBond(bondAddress: Address): Bond {
 
     tranches.push(tranche.id);
     trancheToken.save();
+    TrancheTemplate.create(Address.fromHexString(tranche.id) as Address);
     tranche.save();
   }
   bond.tranches = tranches;
 
   return bond;
-}
-
-/**
- * Build a token object from the given token address
- */
-function buildToken(address: Address): Token | null {
-  let token = Token.load(address.toHexString());
-  if (token == null) {
-    token = new Token(address.toHexString());
-    token.symbol = fetchTokenSymbol(address);
-    token.name = fetchTokenName(address);
-    let erc20 = ERC20.bind(address);
-    token.decimals = BigInt.fromI32(erc20.decimals());
-    token.totalSupply = erc20.totalSupply();
-  }
-  return token;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 import { ONE_BI, ZERO_BI, ZERO_BD, ONE_BD } from "./constants";
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
@@ -64,6 +64,11 @@ export function isNullEthValue(value: string): boolean {
   return value == "0x0000000000000000000000000000000000000000000000000000000000000001";
 }
 
+export function isNullAddress(address: Address): boolean {
+    return address.equals(Address.fromHexString('0x0000000000000000000000000000000000000000'));
+
+}
+
 export function bigDecimalExp18(): BigDecimal {
   return BigDecimal.fromString("1000000000000000000");
 }
@@ -77,4 +82,12 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
 
 export function convertEthToDecimal(eth: BigInt): BigDecimal {
   return eth.toBigDecimal().div(exponentToBigDecimal(BigInt.fromI32(18)));
+}
+
+export function toDecimal(value: BigInt, decimals: u32): BigDecimal {
+  let precision = BigInt.fromI32(10)
+    .pow(<u8>decimals)
+    .toBigDecimal()
+
+  return value.divDecimal(precision)
 }

@@ -20,6 +20,8 @@ type Token @entity {
 
 type Tranche @entity {
   id: ID!
+  # reference to the bond in which this tranche belongs
+  bond: Bond!
   # reference to the tranche token contract
   token: Token!
   # ratio of this tranche as a proportion of the total
@@ -47,4 +49,41 @@ type Bond @entity {
   totalDebt: BigInt!
   # The amount of collateral locked in this bond
   totalCollateral: BigInt!
+}
+
+#
+# Current token balance of a particular Ethereum account
+#
+type Account @entity {
+  " Account address "
+  id: ID!
+
+  " Tranche token balances that this account holds "
+  balances: [AccountBalance!]! @derivedFrom(field: "account")
+}
+
+#
+# Current token balance of a particular Ethereum account
+#
+type AccountBalance @entity {
+  " Equals to: <accountAddress>-<tokenAddress>"
+  id: ID!
+
+  " Account address "
+  account: Account!
+
+  " Tranche token address "
+  tranche: Tranche!
+
+  " Current account balance "
+  amount: BigDecimal!
+
+  " Block number in which the balance was last modified "
+  block: BigInt
+
+  " Last modified timestamp in seconds "
+  modified: BigInt
+
+  " Hash of the last transaction that modified the balance "
+  transaction: Bytes
 }

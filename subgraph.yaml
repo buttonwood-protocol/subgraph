@@ -8,9 +8,9 @@ dataSources:
     name: BondFactory
     network: kovan
     source:
-      address: "0x5c9ab9d2f20be061a42d86ad04951112e895c7bb"
+      address: "0xa37f6be5e627026b2ec8cdcb085cf9974c95ab7a"
       abi: BondFactory
-      startBlock: 26300700
+      startBlock: 27005790
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -93,3 +93,27 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/mappings/tranche.ts
+  - kind: ethereum/contract
+    name: RebasingTokenTemplate
+    network: kovan
+    source:
+      abi: IRebasingERC20
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: IRebasingERC20
+          file: ./abis/IRebasingERC20.json
+        - name: BondController
+          file: ./abis/BondController.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Rebase(indexed uint256,uint256)
+          handler: handleRebase
+        - event: LogRebase(indexed uint256,uint256)
+          handler: handleRebase
+      file: ./src/mappings/rebasingToken.ts

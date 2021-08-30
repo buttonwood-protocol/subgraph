@@ -1,6 +1,6 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, DataSourceContext } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../generated/BondFactory/BondFactory";
-import { BondTemplate, TrancheTemplate } from "../../generated/templates";
+import { BondTemplate, TrancheTemplate, RebasingTokenTemplate } from "../../generated/templates";
 import { Bond, Factory } from "../../generated/schema";
 import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
 import { buildToken } from "../utils/token";
@@ -42,9 +42,14 @@ export function buildBond(bondAddress: Address): Bond {
   bond.totalCollateral = ZERO_BI;
   bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
 
-  let collateral = buildToken(Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address);
+  let collateralAddress = Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address;
+  let collateral = buildToken(collateralAddress);
   bond.collateral = collateral.id;
   collateral.save();
+
+  let collateralContext = new DataSourceContext();
+  collateralContext.setString('bond', bond.id);
+  RebasingTokenTemplate.createWithContext(collateralAddress, collateralContext);
 
   let tranches: string[] = [];
   for (let i = 0; i < fetchTrancheCount(bondAddress); i++) {

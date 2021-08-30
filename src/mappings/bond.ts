@@ -56,7 +56,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   }
 }
 
-function updateBond(bond: Bond): Bond {
+export function updateBond(bond: Bond): Bond {
   let bondAddress = Address.fromHexString(bond.id) as Address
   bond.totalDebt = fetchTotalDebt(bondAddress);
   bond.totalCollateral = ERC20.bind(Address.fromHexString(bond.collateral) as Address).balanceOf(bondAddress);
@@ -77,7 +77,7 @@ function updateBond(bond: Bond): Bond {
   return bond;
 }
 
-function getBond(address: Address): Bond {
+export function getBond(address: Address): Bond {
   let bond = Bond.load(address.toHexString());
 
   if (bond !== null) {

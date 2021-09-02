@@ -33,3 +33,17 @@ export class TrancheTemplate extends DataSourceTemplate {
     );
   }
 }
+
+export class RebasingTokenTemplate extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("RebasingTokenTemplate", [address.toHex()]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "RebasingTokenTemplate",
+      [address.toHex()],
+      context
+    );
+  }
+}

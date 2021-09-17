@@ -4,7 +4,6 @@ type Factory @entity {
   bondCount: BigInt!
 }
 
-
 type Token @entity {
   # token address
   id: ID!
@@ -76,7 +75,7 @@ type AccountBalance @entity {
   tranche: Tranche!
 
   " Current account balance "
-  amount: BigDecimal!
+  amount: BigInt!
 
   " Block number in which the balance was last modified "
   block: BigInt

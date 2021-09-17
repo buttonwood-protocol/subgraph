@@ -4,7 +4,7 @@ import {
 } from "../../generated/templates/TrancheTemplate/Tranche";
 import { Account, AccountBalance, Token } from "../../generated/schema";
 import { buildToken } from '../utils/token';
-import { isNullAddress, toDecimal } from '../utils';
+import { isNullAddress } from '../utils';
 
 export function handleTransfer(event: Transfer): void {
     let from = event.params.from;
@@ -16,7 +16,7 @@ export function handleTransfer(event: Transfer): void {
         token.save();
     }
 
-    let amount = toDecimal(event.params.value, token.decimals.toI32());
+    let amount = event.params.value;
 
     if (!isNullAddress(from)) {
         let fromAccount = getOrCreateAccount(from);
@@ -65,7 +65,7 @@ export function getOrCreateAccountBalance(account: Account, token: Token): Accou
     let newBalance = new AccountBalance(id);
     newBalance.account = account.id;
     newBalance.tranche = token.id;
-    newBalance.amount = BigInt.fromI32(0).toBigDecimal()
+    newBalance.amount = BigInt.fromI32(0);
 
     return newBalance
 }

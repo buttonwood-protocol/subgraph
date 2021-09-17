@@ -377,13 +377,13 @@ export class AccountBalance extends Entity {
     this.set("tranche", Value.fromString(value));
   }
 
-  get amount(): BigDecimal {
+  get amount(): BigInt {
     let value = this.get("amount");
-    return value.toBigDecimal();
+    return value.toBigInt();
   }
 
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 
   get block(): BigInt | null {

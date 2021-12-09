@@ -35,12 +35,16 @@ export function handleBondCreated(event: BondCreated): void {
 /**
  * Build a bond object from the given address and log event
  */
-export function buildBond(bondAddress: Address): Bond {
+export function buildBond(bondAddress: Address, creator: Address = null): Bond {
   let bond = new Bond(bondAddress.toHexString());
   bond.isMature = false;
   bond.totalDebt = ZERO_BI;
   bond.totalCollateral = ZERO_BI;
   bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
+
+  if (creator !== null) {
+    bond.creator = creator.toHexString();
+  }
 
   let collateralAddress = Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address;
   let collateral = buildToken(collateralAddress);

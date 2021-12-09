@@ -225,6 +225,15 @@ export class Bond extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get creator(): string {
+    let value = this.get("creator");
+    return value.toString();
+  }
+
+  set creator(value: string) {
+    this.set("creator", Value.fromString(value));
+  }
+
   get owners(): Array<string | null> {
     let value = this.get("owners");
     return value.toStringArray();

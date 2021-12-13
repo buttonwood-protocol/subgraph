@@ -34,6 +34,8 @@ type Tranche @entity {
 type Bond @entity {
   # bond address
   id: ID!
+  # address of the creator
+  creator: String!
   # address of the owner
   owners: [String]!
   # reference to the collateral token

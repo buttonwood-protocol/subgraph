@@ -234,6 +234,15 @@ export class Bond extends Entity {
     this.set("creator", Value.fromString(value));
   }
 
+  get depositLimit(): BigInt {
+    let value = this.get("depositLimit");
+    return value.toBigInt();
+  }
+
+  set depositLimit(value: BigInt) {
+    this.set("depositLimit", Value.fromBigInt(value));
+  }
+
   get owners(): Array<string | null> {
     let value = this.get("owners");
     return value.toStringArray();

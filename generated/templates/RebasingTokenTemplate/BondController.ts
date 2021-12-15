@@ -30,6 +30,10 @@ export class Deposit__Params {
   get amount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
+
+  get amount1(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
 }
 
 export class Mature extends ethereum.Event {
@@ -309,6 +313,21 @@ export class BondController extends ethereum.SmartContract {
 
   try_maturityDate(): ethereum.CallResult<BigInt> {
     let result = super.tryCall("maturityDate", "maturityDate():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  depositLimit(): BigInt {
+    let result = super.call("depositLimit", "depositLimit():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_depositLimit(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("depositLimit", "depositLimit():(uint256)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }

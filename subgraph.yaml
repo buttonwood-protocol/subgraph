@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: BondFactory
-    network: kovan
+    network: mainnet
     source:
-      address: "0x0b5Bbd7689a4A2b65D5bD7f16c6180c61ee22207"
+      address: "0x019fa32d71bb96922695c6cdea33774fdeb04ac0"
       abi: BondFactory
-      startBlock: 28689782
+      startBlock: 13779573
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -35,7 +35,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: BondTemplate
-    network: kovan
+    network: mainnet
     source:
       abi: BondController
     mapping:
@@ -60,7 +60,7 @@ templates:
         - name: ERC20SymbolBytes
           file: ./abis/ERC20SymbolBytes.json
       eventHandlers:
-        - event: Deposit(address,uint256)
+        - event: Deposit(address,uint256,uint256)
           handler: handleDeposit
         - event: Mature(address)
           handler: handleMature
@@ -77,7 +77,7 @@ templates:
       file: ./src/mappings/bond.ts
   - kind: ethereum/contract
     name: TrancheTemplate
-    network: kovan
+    network: mainnet
     source:
       abi: Tranche
     mapping:
@@ -95,7 +95,7 @@ templates:
       file: ./src/mappings/tranche.ts
   - kind: ethereum/contract
     name: RebasingTokenTemplate
-    network: kovan
+    network: mainnet
     source:
       abi: IRebasingERC20
     mapping:

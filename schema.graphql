@@ -36,6 +36,8 @@ type Bond @entity {
   id: ID!
   # address of the creator
   creator: String!
+  # Deposit limit of the bond
+  depositLimit: BigInt!
   # address of the owner
   owners: [String]!
   # reference to the collateral token

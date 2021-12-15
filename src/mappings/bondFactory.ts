@@ -2,7 +2,7 @@ import { Address, BigInt, DataSourceContext } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../generated/BondFactory/BondFactory";
 import { BondTemplate, TrancheTemplate, RebasingTokenTemplate } from "../../generated/templates";
 import { Bond, Factory } from "../../generated/schema";
-import { fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
+import { fetchDepositLimit, fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
 import { buildToken } from "../utils/token";
 import { ZERO_BI } from "../utils/constants";
 
@@ -24,7 +24,7 @@ export function handleBondCreated(event: BondCreated): void {
 
   // Entity fields can be set based on event parameters
   let bondAddress = event.params.newBondAddress;
-  let bond = buildBond(bondAddress);
+  let bond = makeNewBond(bondAddress, event.params.creator);
   bond.owners = [event.transaction.from.toHexString()];
 
   bond.save();
@@ -35,16 +35,23 @@ export function handleBondCreated(event: BondCreated): void {
 /**
  * Build a bond object from the given address and log event
  */
-export function buildBond(bondAddress: Address, creator: Address = null): Bond {
+function makeNewBond(bondAddress: Address, creator: Address): Bond {
+  let bond = buildBond(bondAddress);
+  bond.creator = creator.toHexString();
+
+  return bond;
+}
+
+/**
+ * Build a bond object from the given address and log event
+ */
+export function buildBond(bondAddress: Address): Bond {
   let bond = new Bond(bondAddress.toHexString());
   bond.isMature = false;
   bond.totalDebt = ZERO_BI;
   bond.totalCollateral = ZERO_BI;
   bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
-
-  if (creator !== null) {
-    bond.creator = creator.toHexString();
-  }
+  bond.depositLimit = fetchDepositLimit(bondAddress);
 
   let collateralAddress = Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address;
   let collateral = buildToken(collateralAddress);

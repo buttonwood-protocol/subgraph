@@ -53,6 +53,18 @@ export function fetchMaturityDate(bondAddress: Address): number {
   return maturityDate;
 }
 
+export function fetchDepositLimit(bondAddress: Address): BigInt {
+  let contract = BondController.bind(bondAddress);
+
+  let depositLimit = ZERO_BI;
+  let depositLimitResult = contract.try_depositLimit();
+  if (!depositLimitResult.reverted) {
+    depositLimit = depositLimitResult.value;
+  }
+
+  return depositLimit;
+}
+
 export function fetchTranche(bondAddress: Address, collateral: string, i: number): Tranche {
   let contract = BondController.bind(bondAddress);
 

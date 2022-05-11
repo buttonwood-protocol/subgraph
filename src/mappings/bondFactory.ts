@@ -50,7 +50,7 @@ export function buildBond(bondAddress: Address): Bond {
   bond.isMature = false;
   bond.totalDebt = ZERO_BI;
   bond.totalCollateral = ZERO_BI;
-  bond.maturityDate = BigInt.fromI32(fetchMaturityDate(bondAddress) as i32);
+  bond.maturityDate = fetchMaturityDate(bondAddress);
   bond.depositLimit = fetchDepositLimit(bondAddress);
 
   let collateralAddress = Address.fromHexString(fetchCollateralTokenAddress(bondAddress)) as Address;

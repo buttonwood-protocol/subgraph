@@ -41,13 +41,13 @@ export function fetchTotalDebt(bondAddress: Address): BigInt {
   return totalDebt;
 }
 
-export function fetchMaturityDate(bondAddress: Address): number {
+export function fetchMaturityDate(bondAddress: Address): BigInt {
   let contract = BondController.bind(bondAddress);
 
-  let maturityDate = 0;
+  let maturityDate = ZERO_BI;
   let maturityDateResult = contract.try_maturityDate();
   if (!maturityDateResult.reverted) {
-    maturityDate = maturityDateResult.value.toI32();
+    maturityDate = maturityDateResult.value;
   }
 
   return maturityDate;

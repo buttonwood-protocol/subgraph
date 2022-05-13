@@ -194,22 +194,38 @@ export class Tranche extends Entity {
     this.set("totalCollateral", Value.fromBigInt(value));
   }
 
-  get totalCollateralAtMaturity(): BigInt {
+  get totalCollateralAtMaturity(): BigInt | null {
     let value = this.get("totalCollateralAtMaturity");
-    return value.toBigInt();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set totalCollateralAtMaturity(value: BigInt) {
-    this.set("totalCollateralAtMaturity", Value.fromBigInt(value));
+  set totalCollateralAtMaturity(value: BigInt | null) {
+    if (value === null) {
+      this.unset("totalCollateralAtMaturity");
+    } else {
+      this.set("totalCollateralAtMaturity", Value.fromBigInt(value as BigInt));
+    }
   }
 
-  get totalSupplyAtMaturity(): BigInt {
+  get totalSupplyAtMaturity(): BigInt | null {
     let value = this.get("totalSupplyAtMaturity");
-    return value.toBigInt();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set totalSupplyAtMaturity(value: BigInt) {
-    this.set("totalSupplyAtMaturity", Value.fromBigInt(value));
+  set totalSupplyAtMaturity(value: BigInt | null) {
+    if (value === null) {
+      this.unset("totalSupplyAtMaturity");
+    } else {
+      this.set("totalSupplyAtMaturity", Value.fromBigInt(value as BigInt));
+    }
   }
 }
 
@@ -297,13 +313,21 @@ export class Bond extends Entity {
     this.set("maturityDate", Value.fromBigInt(value));
   }
 
-  get maturedDate(): BigInt {
+  get maturedDate(): BigInt | null {
     let value = this.get("maturedDate");
-    return value.toBigInt();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set maturedDate(value: BigInt) {
-    this.set("maturedDate", Value.fromBigInt(value));
+  set maturedDate(value: BigInt | null) {
+    if (value === null) {
+      this.unset("maturedDate");
+    } else {
+      this.set("maturedDate", Value.fromBigInt(value as BigInt));
+    }
   }
 
   get isMature(): boolean {
@@ -324,13 +348,21 @@ export class Bond extends Entity {
     this.set("totalDebt", Value.fromBigInt(value));
   }
 
-  get totalDebtAtMaturity(): BigInt {
+  get totalDebtAtMaturity(): BigInt | null {
     let value = this.get("totalDebtAtMaturity");
-    return value.toBigInt();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set totalDebtAtMaturity(value: BigInt) {
-    this.set("totalDebtAtMaturity", Value.fromBigInt(value));
+  set totalDebtAtMaturity(value: BigInt | null) {
+    if (value === null) {
+      this.unset("totalDebtAtMaturity");
+    } else {
+      this.set("totalDebtAtMaturity", Value.fromBigInt(value as BigInt));
+    }
   }
 
   get totalCollateral(): BigInt {
@@ -342,13 +374,21 @@ export class Bond extends Entity {
     this.set("totalCollateral", Value.fromBigInt(value));
   }
 
-  get totalCollateralAtMaturity(): BigInt {
+  get totalCollateralAtMaturity(): BigInt | null {
     let value = this.get("totalCollateralAtMaturity");
-    return value.toBigInt();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set totalCollateralAtMaturity(value: BigInt) {
-    this.set("totalCollateralAtMaturity", Value.fromBigInt(value));
+  set totalCollateralAtMaturity(value: BigInt | null) {
+    if (value === null) {
+      this.unset("totalCollateralAtMaturity");
+    } else {
+      this.set("totalCollateralAtMaturity", Value.fromBigInt(value as BigInt));
+    }
   }
 }
 

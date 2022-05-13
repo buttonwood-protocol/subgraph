@@ -1,4 +1,4 @@
-import { Address, Bytes } from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import {
   Deposit,
   Mature,
@@ -81,18 +81,21 @@ export function updateBond(bond: Bond): Bond {
 export function matureBond(event: Mature, bond: Bond): Bond {
   bond.isMature = true;
   bond.maturedDate = event.block.timestamp;
-  bond.totalCollateralAtMaturity = bond.totalCollateral;
   bond.totalDebtAtMaturity = bond.totalDebt;
 
   let tranches = bond.tranches;
+  let totalCollateralAtMaturity = BigInt.fromI32(0);
   for (let i = 0; i < tranches.length; i++) {
     let trancheAddress = tranches[i];
     let tranche = Tranche.load(trancheAddress);
     let trancheToken = Token.load(trancheAddress);
     tranche.totalSupplyAtMaturity = trancheToken.totalSupply;
     tranche.totalCollateralAtMaturity = tranche.totalCollateral;
+    // bond.totalCollateral is 0 after maturity is called so compute this from values the tranches now have
+    totalCollateralAtMaturity = totalCollateralAtMaturity.plus(tranche.totalCollateral);
     tranche.save();
   }
+  bond.totalCollateralAtMaturity = totalCollateralAtMaturity;
   return bond;
 }
 

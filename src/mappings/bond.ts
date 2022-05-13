@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from '@graphprotocol/graph-ts';
 import {
   Deposit,
   Mature,
@@ -7,34 +7,35 @@ import {
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
-} from "../../generated/templates/BondTemplate/BondController";
+} from '../../generated/templates/BondTemplate/BondController';
 import { ERC20 } from '../../generated/BondFactory/ERC20';
-import { Bond, Tranche, Token } from "../../generated/schema";
+import { Bond, Token, Tranche } from '../../generated/schema';
 import { buildBond } from './bondFactory';
 import { BYTES32_ZERO } from '../utils/constants';
 import { fetchTotalDebt } from '../utils/bond';
 
 export function handleDeposit(event: Deposit): void {
   let bondAddress = event.address;
-  let bond = updateBond(getBond(bondAddress))
+  let bond = updateBond(getBond(bondAddress));
   bond.save();
 }
 
 export function handleMature(event: Mature): void {
-  let bond = updateBond(getBond(event.address))
-  bond.isMature = true;
+  let bondAddress = event.address;
+  let bond = updateBond(getBond(bondAddress));
+  bond = matureBond(event, bond);
   bond.save();
 }
 
 export function handleRedeem(event: Redeem): void {
   let bondAddress = event.address;
-  let bond = updateBond(getBond(bondAddress))
+  let bond = updateBond(getBond(bondAddress));
   bond.save();
 }
 
 export function handleRedeemMature(event: RedeemMature): void {
   let bondAddress = event.address;
-  let bond = updateBond(getBond(bondAddress))
+  let bond = updateBond(getBond(bondAddress));
   bond.save();
 }
 
@@ -57,13 +58,13 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 }
 
 export function updateBond(bond: Bond): Bond {
-  let bondAddress = Address.fromHexString(bond.id) as Address
+  let bondAddress = Address.fromHexString(bond.id) as Address;
   bond.totalDebt = fetchTotalDebt(bondAddress);
   bond.totalCollateral = ERC20.bind(Address.fromHexString(bond.collateral) as Address).balanceOf(bondAddress);
   let collateral = Token.load(bond.collateral);
   collateral.totalSupply = ERC20.bind(Address.fromHexString(bond.collateral) as Address).totalSupply();
   collateral.save();
-  
+
   let tranches = bond.tranches;
   for (let i = 0; i < tranches.length; i++) {
     let trancheAddress = tranches[i];
@@ -77,12 +78,30 @@ export function updateBond(bond: Bond): Bond {
   return bond;
 }
 
+export function matureBond(event: Mature, bond: Bond): Bond {
+  bond.isMature = true;
+  bond.maturedDate = event.block.timestamp;
+  bond.totalCollateralAtMaturity = bond.totalCollateral;
+  bond.totalDebtAtMaturity = bond.totalDebt;
+
+  let tranches = bond.tranches;
+  for (let i = 0; i < tranches.length; i++) {
+    let trancheAddress = tranches[i];
+    let tranche = Tranche.load(trancheAddress);
+    let trancheToken = Token.load(trancheAddress);
+    tranche.totalSupplyAtMaturity = trancheToken.totalSupply;
+    tranche.totalCollateralAtMaturity = tranche.totalCollateral;
+    tranche.save();
+  }
+  return bond;
+}
+
 export function getBond(address: Address): Bond {
   let bond = Bond.load(address.toHexString());
 
   if (bond !== null) {
-      return bond!
+    return bond!;
   } else {
-    return buildBond(address)
+    return buildBond(address);
   }
 }

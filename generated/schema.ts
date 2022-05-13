@@ -193,6 +193,24 @@ export class Tranche extends Entity {
   set totalCollateral(value: BigInt) {
     this.set("totalCollateral", Value.fromBigInt(value));
   }
+
+  get totalCollateralAtMaturity(): BigInt {
+    let value = this.get("totalCollateralAtMaturity");
+    return value.toBigInt();
+  }
+
+  set totalCollateralAtMaturity(value: BigInt) {
+    this.set("totalCollateralAtMaturity", Value.fromBigInt(value));
+  }
+
+  get totalSupplyAtMaturity(): BigInt {
+    let value = this.get("totalSupplyAtMaturity");
+    return value.toBigInt();
+  }
+
+  set totalSupplyAtMaturity(value: BigInt) {
+    this.set("totalSupplyAtMaturity", Value.fromBigInt(value));
+  }
 }
 
 export class Bond extends Entity {
@@ -279,6 +297,15 @@ export class Bond extends Entity {
     this.set("maturityDate", Value.fromBigInt(value));
   }
 
+  get maturedDate(): BigInt {
+    let value = this.get("maturedDate");
+    return value.toBigInt();
+  }
+
+  set maturedDate(value: BigInt) {
+    this.set("maturedDate", Value.fromBigInt(value));
+  }
+
   get isMature(): boolean {
     let value = this.get("isMature");
     return value.toBoolean();
@@ -297,6 +324,15 @@ export class Bond extends Entity {
     this.set("totalDebt", Value.fromBigInt(value));
   }
 
+  get totalDebtAtMaturity(): BigInt {
+    let value = this.get("totalDebtAtMaturity");
+    return value.toBigInt();
+  }
+
+  set totalDebtAtMaturity(value: BigInt) {
+    this.set("totalDebtAtMaturity", Value.fromBigInt(value));
+  }
+
   get totalCollateral(): BigInt {
     let value = this.get("totalCollateral");
     return value.toBigInt();
@@ -304,6 +340,15 @@ export class Bond extends Entity {
 
   set totalCollateral(value: BigInt) {
     this.set("totalCollateral", Value.fromBigInt(value));
+  }
+
+  get totalCollateralAtMaturity(): BigInt {
+    let value = this.get("totalCollateralAtMaturity");
+    return value.toBigInt();
+  }
+
+  set totalCollateralAtMaturity(value: BigInt) {
+    this.set("totalCollateralAtMaturity", Value.fromBigInt(value));
   }
 }
 

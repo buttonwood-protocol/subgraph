@@ -1,0 +1,28 @@
+[
+  {
+    "inputs": [],
+    "name": "amplEthOracle",
+    "outputs": [
+      {
+        "internalType": "contract IChainlinkAggregator",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ethUsdOracle",
+    "outputs": [
+      {
+        "internalType": "contract IChainlinkAggregator",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

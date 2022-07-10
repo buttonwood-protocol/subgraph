@@ -1,10 +1,25 @@
-import { Address, BigInt, DataSourceContext } from "@graphprotocol/graph-ts";
-import { BondCreated } from "../../generated/BondFactory/BondFactory";
-import { BondTemplate, TrancheTemplate, RebasingTokenTemplate } from "../../generated/templates";
-import { Bond, Factory } from "../../generated/schema";
-import { fetchDepositLimit, fetchMaturityDate, fetchCollateralTokenAddress, fetchTranche, fetchTrancheCount } from "../utils/bond";
-import { buildToken } from "../utils/token";
-import { ZERO_BI } from "../utils/constants";
+import { Address, BigInt, DataSourceContext } from '@graphprotocol/graph-ts';
+import { BondCreated } from '../../generated/BondFactory/BondFactory';
+import { ButtonToken } from '../../generated/BondFactory/ButtonToken';
+import { ChainlinkOracle } from '../../generated/BondFactory/ChainlinkOracle';
+import { WamplOracle } from '../../generated/BondFactory/WamplOracle';
+import { EACAggregatorProxy } from '../../generated/BondFactory/EACAggregatorProxy';
+import {
+  AccessControlledOffchainAggregatorTemplate,
+  BondTemplate,
+  RebasingTokenTemplate,
+  TrancheTemplate
+} from '../../generated/templates';
+import { Bond, Factory } from '../../generated/schema';
+import {
+  fetchCollateralTokenAddress,
+  fetchDepositLimit,
+  fetchMaturityDate,
+  fetchTranche,
+  fetchTrancheCount
+} from '../utils/bond';
+import { buildToken } from '../utils/token';
+import { ZERO_BI } from '../utils/constants';
 
 export function handleBondCreated(event: BondCreated): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -42,6 +57,15 @@ function makeNewBond(bondAddress: Address, creator: Address): Bond {
   return bond;
 }
 
+function tryCreateAccessControlledOffchainAggregator(oracleProxyAddress: Address, bondId: string) {
+  const aggregatorResult = EACAggregatorProxy.bind(oracleProxyAddress).try_aggregator();
+  if (!aggregatorResult.reverted) {
+    let context = new DataSourceContext();
+    context.setString('bond', bondId);
+    AccessControlledOffchainAggregatorTemplate.createWithContext(aggregatorResult.value, context);
+  }
+}
+
 /**
  * Build a bond object from the given address and log event
  */
@@ -61,6 +85,24 @@ export function buildBond(bondAddress: Address): Bond {
   let collateralContext = new DataSourceContext();
   collateralContext.setString('bond', bond.id);
   RebasingTokenTemplate.createWithContext(collateralAddress, collateralContext);
+
+  const buttonTokenOracleResult = ButtonToken.bind(collateralAddress).try_oracle();
+  if (!buttonTokenOracleResult.reverted) {
+    const buttonTokenOracleAddress = buttonTokenOracleResult.result;
+    const chainlinkOracleOracleResult = ChainlinkOracle.bind(buttonTokenOracleAddress).try_oracle();
+    if (!chainlinkOracleOracleResult.reverted) {
+      tryCreateAccessControlledOffchainAggregator(chainlinkOracleOracleResult.result, bond.id);
+    } else {
+      const wamplOracleAmplEthOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_amplEthOracle();
+      const wamplOracleEthUsdOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_ethUsdOracle();
+      if (!wamplOracleAmplEthOracleResult.reverted && !wamplOracleEthUsdOracleResult.reverted) {
+        tryCreateAccessControlledOffchainAggregator(wamplOracleAmplEthOracleResult.result, bond.id);
+        tryCreateAccessControlledOffchainAggregator(wamplOracleEthUsdOracleResult.result, bond.id);
+      } else {
+        // Unrecognised oracle type, give up
+      }
+    }
+  }
 
   let tranches: string[] = [];
   for (let i = 0; i < fetchTrancheCount(bondAddress); i++) {

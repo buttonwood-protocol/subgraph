@@ -57,8 +57,8 @@ function makeNewBond(bondAddress: Address, creator: Address): Bond {
   return bond;
 }
 
-function tryCreateAccessControlledOffchainAggregator(oracleProxyAddress: Address, bondId: string) {
-  const aggregatorResult = EACAggregatorProxy.bind(oracleProxyAddress).try_aggregator();
+function tryCreateAccessControlledOffchainAggregator(oracleProxyAddress: Address, bondId: string): void {
+  let aggregatorResult = EACAggregatorProxy.bind(oracleProxyAddress).try_aggregator();
   if (!aggregatorResult.reverted) {
     let context = new DataSourceContext();
     context.setString('bond', bondId);
@@ -86,18 +86,18 @@ export function buildBond(bondAddress: Address): Bond {
   collateralContext.setString('bond', bond.id);
   RebasingTokenTemplate.createWithContext(collateralAddress, collateralContext);
 
-  const buttonTokenOracleResult = ButtonToken.bind(collateralAddress).try_oracle();
+  let buttonTokenOracleResult = ButtonToken.bind(collateralAddress).try_oracle();
   if (!buttonTokenOracleResult.reverted) {
-    const buttonTokenOracleAddress = buttonTokenOracleResult.result;
-    const chainlinkOracleOracleResult = ChainlinkOracle.bind(buttonTokenOracleAddress).try_oracle();
+    let buttonTokenOracleAddress = buttonTokenOracleResult.value;
+    let chainlinkOracleOracleResult = ChainlinkOracle.bind(buttonTokenOracleAddress).try_oracle();
     if (!chainlinkOracleOracleResult.reverted) {
-      tryCreateAccessControlledOffchainAggregator(chainlinkOracleOracleResult.result, bond.id);
+      tryCreateAccessControlledOffchainAggregator(chainlinkOracleOracleResult.value, bond.id);
     } else {
-      const wamplOracleAmplEthOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_amplEthOracle();
-      const wamplOracleEthUsdOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_ethUsdOracle();
+      let wamplOracleAmplEthOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_amplEthOracle();
+      let wamplOracleEthUsdOracleResult = WamplOracle.bind(buttonTokenOracleAddress).try_ethUsdOracle();
       if (!wamplOracleAmplEthOracleResult.reverted && !wamplOracleEthUsdOracleResult.reverted) {
-        tryCreateAccessControlledOffchainAggregator(wamplOracleAmplEthOracleResult.result, bond.id);
-        tryCreateAccessControlledOffchainAggregator(wamplOracleEthUsdOracleResult.result, bond.id);
+        tryCreateAccessControlledOffchainAggregator(wamplOracleAmplEthOracleResult.value, bond.id);
+        tryCreateAccessControlledOffchainAggregator(wamplOracleEthUsdOracleResult.value, bond.id);
       } else {
         // Unrecognised oracle type, give up
       }

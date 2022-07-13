@@ -28,6 +28,14 @@ dataSources:
           file: ./abis/ERC20SymbolBytes.json
         - name: BondController
           file: ./abis/BondController.json
+        - name: ButtonToken
+          file: ./abis/ButtonToken.json
+        - name: ChainlinkOracle
+          file: ./abis/ChainlinkOracle.json
+        - name: WamplOracle
+          file: ./abis/WamplOracle.json
+        - name: EACAggregatorProxy
+          file: ./abis/EACAggregatorProxy.json
       eventHandlers:
         - event: BondCreated(address,address)
           handler: handleBondCreated
@@ -115,5 +123,27 @@ templates:
         - event: Rebase(indexed uint256,uint256)
           handler: handleRebase
         - event: LogRebase(indexed uint256,uint256)
-          handler: handleRebase
+          handler: handleLogRebase
       file: ./src/mappings/rebasingToken.ts
+  - kind: ethereum/contract
+    name: AccessControlledOffchainAggregatorTemplate
+    network: mainnet
+    source:
+      abi: AccessControlledOffchainAggregator
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: AccessControlledOffchainAggregator
+          file: ./abis/AccessControlledOffchainAggregator.json
+        - name: BondController
+          file: ./abis/BondController.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: NewTransmission(indexed uint32,int192,address,int192[],bytes,bytes32)
+          handler: handleNewTransmission
+      file: ./src/mappings/accessControlledOffchainAggregator.ts

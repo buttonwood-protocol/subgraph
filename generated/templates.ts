@@ -47,3 +47,19 @@ export class RebasingTokenTemplate extends DataSourceTemplate {
     );
   }
 }
+
+export class AccessControlledOffchainAggregatorTemplate extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("AccessControlledOffchainAggregatorTemplate", [
+      address.toHex()
+    ]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "AccessControlledOffchainAggregatorTemplate",
+      [address.toHex()],
+      context
+    );
+  }
+}

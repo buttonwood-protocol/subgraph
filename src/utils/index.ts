@@ -1,11 +1,11 @@
 /* eslint-disable prefer-const */
-import { Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
-import { ONE_BI, ZERO_BI, ZERO_BD, ONE_BD } from "./constants";
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { ONE_BD, ONE_BI, ZERO_BD, ZERO_BI } from './constants';
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
-  let bd = BigDecimal.fromString("1");
+  let bd = BigDecimal.fromString('1');
   for (let i = ZERO_BI; i.lt(decimals as BigInt); i = i.plus(ONE_BI)) {
-    bd = bd.times(BigDecimal.fromString("10"));
+    bd = bd.times(BigDecimal.fromString('10'));
   }
   return bd;
 }
@@ -61,16 +61,16 @@ export function equalToZero(value: BigDecimal): boolean {
 }
 
 export function isNullEthValue(value: string): boolean {
-  return value == "0x0000000000000000000000000000000000000000000000000000000000000001";
+  return value == '0x0000000000000000000000000000000000000000000000000000000000000001';
 }
 
 export function isNullAddress(address: Address): boolean {
-    return address.equals(Address.fromHexString('0x0000000000000000000000000000000000000000'));
+  return address.equals(Address.fromHexString('0x0000000000000000000000000000000000000000'));
 
 }
 
 export function bigDecimalExp18(): BigDecimal {
-  return BigDecimal.fromString("1000000000000000000");
+  return BigDecimal.fromString('1000000000000000000');
 }
 
 export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: BigInt): BigDecimal {
@@ -87,7 +87,11 @@ export function convertEthToDecimal(eth: BigInt): BigDecimal {
 export function toDecimal(value: BigInt, decimals: u32): BigDecimal {
   let precision = BigInt.fromI32(10)
     .pow(<u8>decimals)
-    .toBigDecimal()
+    .toBigDecimal();
 
-  return value.divDecimal(precision)
+  return value.divDecimal(precision);
+}
+
+export function castToAddress(id: string): Address {
+  return Address.fromString(id);
 }

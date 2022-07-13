@@ -48,6 +48,32 @@ export class NewTransmission__Params {
   }
 }
 
+export class AnswerUpdated extends ethereum.Event {
+  get params(): AnswerUpdated__Params {
+    return new AnswerUpdated__Params(this);
+  }
+}
+
+export class AnswerUpdated__Params {
+  _event: AnswerUpdated;
+
+  constructor(event: AnswerUpdated) {
+    this._event = event;
+  }
+
+  get current(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get roundId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get updatedAt(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class AccessControlledOffchainAggregator extends ethereum.SmartContract {
   static bind(address: Address): AccessControlledOffchainAggregator {
     return new AccessControlledOffchainAggregator(

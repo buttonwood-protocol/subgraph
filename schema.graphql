@@ -26,7 +26,6 @@ type Tranche @entity {
   " reference to the tranche token contract "
   token: Token!
   " ratio of this tranche, all tranche ratios sum to 1000 "
-  " ratio of this tranche, all tranche ratios sum to 1000 "
   ratio: BigInt!
   " index of this tranche, i.e. A-tranche is 0, B is 1 and so on "
   index: BigInt!

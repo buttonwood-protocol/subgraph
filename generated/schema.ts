@@ -169,13 +169,13 @@ export class Tranche extends Entity {
     this.set("token", Value.fromString(value));
   }
 
-  get ratio(): BigDecimal {
+  get ratio(): BigInt {
     let value = this.get("ratio");
-    return value!.toBigDecimal();
+    return value!.toBigInt();
   }
 
-  set ratio(value: BigDecimal) {
-    this.set("ratio", Value.fromBigDecimal(value));
+  set ratio(value: BigInt) {
+    this.set("ratio", Value.fromBigInt(value));
   }
 
   get index(): BigInt {

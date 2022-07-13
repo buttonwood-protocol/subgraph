@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigInt } from '@graphprotocol/graph-ts';
 import { Tranche } from '../../generated/schema';
 import { BondController } from '../../generated/templates/BondTemplate/BondController';
 import { castToAddress } from './index';
@@ -14,7 +14,7 @@ export function createTranche(bondId: string, collateralId: string, trancheIndex
     tranche.bond = bondId;
     tranche.index = BigInt.fromI32(trancheIndex as i32);
     tranche.token = trancheId;
-    tranche.ratio = BigDecimal.fromString(trancheResult.value.getRatio().toString());
+    tranche.ratio = trancheResult.value.getRatio();
     tranche.totalCollateral = ERC20.bind(castToAddress(collateralId)).balanceOf(trancheAddress);
     tranche.save();
     return tranche;

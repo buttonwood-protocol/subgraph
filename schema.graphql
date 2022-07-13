@@ -1,68 +1,70 @@
 type Factory @entity {
+  " factory contract address "
   id: ID!
-  # number of bonds created
+  " number of bonds created "
   bondCount: BigInt!
 }
 
 type Token @entity {
-  # token address
+  " token address "
   id: ID!
-  # token symbol
+  " token symbol "
   symbol: String!
-  # token name
+  " token name "
   name: String!
-  # token decimals
+  " token decimals "
   decimals: BigInt!
-  # token total supply
+  " token total supply "
   totalSupply: BigInt!
 }
 
 type Tranche @entity {
+  " tranche token address "
   id: ID!
-  # reference to the bond in which this tranche belongs
+  " reference to the bond in which this tranche belongs "
   bond: Bond!
-  # reference to the tranche token contract
+  " reference to the tranche token contract "
   token: Token!
-  # ratio of this tranche as a proportion of the total
+  " ratio of this tranche as a proportion of the total "
   ratio: BigDecimal!
-  # index of this tranche, i.e. A-tranche is 0, B is 1 and so on
+  " index of this tranche, i.e. A-tranche is 0, B is 1 and so on "
   index: BigInt!
-  # The amount of collateral in this tranche for redemption
+  " The amount of collateral in this tranche for redemption "
   totalCollateral: BigInt!
-  # The amount of collateral in this tranche for redemption at time bond matured
+  " The amount of collateral in this tranche for redemption at time bond matured "
   totalCollateralAtMaturity: BigInt
-  # token total supply at time bond matured
+  " token total supply at time bond matured "
   totalSupplyAtMaturity: BigInt
 }
 
 type Bond @entity {
-  # bond address
+  " bond address "
   id: ID!
-  # address of the creator
+  " address of the creator "
   creator: String!
-  # Deposit limit of the bond
+  " Deposit limit of the bond "
   depositLimit: BigInt!
-  # address of the owner
+  " address of the owner "
   owner: String!
-  # reference to the collateral token
+  " reference to the collateral token "
   collateral: Token!
-  # The tranches and ratios in a list
+  " The tranches and ratios in a list "
   tranches: [Tranche!]!
-  # The fee collected by bond owner
+  " The fee collected by bond owner "
   feeBps: BigInt!
-  # date of maturity as a unix timestamp
+  " date of maturity as a unix timestamp "
   maturityDate: BigInt!
-  # date bond was matured as a unix timestamp
+  " date bond was matured as a unix timestamp "
   maturedDate: BigInt
-  # true if this bond is mature, else false
+  " true if this bond is mature, else false "
   isMature: Boolean!
-  # Total amount of debt distributed. Equal to the sum of tranche total supplies
+  " Total amount of debt distributed. Equal to the sum of tranche total supplies "
   totalDebt: BigInt!
-  # Total amount of debt distributed at time bond matured. Equal to the sum of tranche total supplies
+  " Total amount of debt distributed at time bond matured. Equal to the sum of tranche total supplies "
   totalDebtAtMaturity: BigInt
-  # The amount of collateral locked in this bond
+  " The amount of collateral locked in this bond "
   totalCollateral: BigInt!
-  # The amount of collateral locked in this bond at time bond matured
+  " The amount of collateral locked in this bond at time bond matured "
   totalCollateralAtMaturity: BigInt
 }
 

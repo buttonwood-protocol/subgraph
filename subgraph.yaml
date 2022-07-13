@@ -10,7 +10,7 @@ dataSources:
     network: mainnet
     source:
       abi: BondFactory
-      address: "0x019fa32d71bb96922695c6cdea33774fdeb04ac0"
+      address: "0x019FA32d71Bb96922695C6cdeA33774Fdeb04Ac0"
       startBlock: 13779573
     mapping:
       kind: ethereum/events
@@ -145,4 +145,6 @@ templates:
       eventHandlers:
         - event: NewTransmission(indexed uint32,int192,address,int192[],bytes,bytes32)
           handler: handleNewTransmission
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdated
       file: ./src/mappings/accessControlledOffchainAggregatorTemplate.ts

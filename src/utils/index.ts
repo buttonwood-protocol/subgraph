@@ -93,5 +93,5 @@ export function toDecimal(value: BigInt, decimals: u32): BigDecimal {
 }
 
 export function castToAddress(id: string): Address {
-  return Address.fromHexString(id) as Address;
+  return Address.fromString(id);
 }

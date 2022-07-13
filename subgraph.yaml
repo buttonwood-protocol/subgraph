@@ -1,5 +1,6 @@
-specVersion: 0.0.2
-description: Buttonwood Tranche is a protocol for price risk stratification of assets on Ethereum
+specVersion: 0.0.4
+description: Buttonwood Tranche is a protocol for price risk stratification of
+  assets on Ethereum
 repository: https://github.com/buttonwood-protocol/subgraph
 schema:
   file: ./schema.graphql
@@ -8,12 +9,12 @@ dataSources:
     name: BondFactory
     network: mainnet
     source:
-      address: "0x019fa32d71bb96922695c6cdea33774fdeb04ac0"
       abi: BondFactory
+      address: "0x019fa32d71bb96922695c6cdea33774fdeb04ac0"
       startBlock: 13779573
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - BondCreated
@@ -48,7 +49,7 @@ templates:
       abi: BondController
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Deposit
@@ -76,13 +77,11 @@ templates:
           handler: handleRedeem
         - event: RedeemMature(address,address,uint256)
           handler: handleRedeemMature
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/mappings/bond.ts
+        - event: FeeUpdate(uint256)
+          handler: handleFeeUpdate
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/mappings/bondTemplate.ts
   - kind: ethereum/contract
     name: TrancheTemplate
     network: mainnet
@@ -90,7 +89,7 @@ templates:
       abi: Tranche
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Transfer
@@ -100,7 +99,7 @@ templates:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: ./src/mappings/tranche.ts
+      file: ./src/mappings/trancheTemplate.ts
   - kind: ethereum/contract
     name: RebasingTokenTemplate
     network: mainnet
@@ -108,7 +107,7 @@ templates:
       abi: IRebasingERC20
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Transfer
@@ -124,7 +123,7 @@ templates:
           handler: handleRebase
         - event: LogRebase(indexed uint256,uint256)
           handler: handleLogRebase
-      file: ./src/mappings/rebasingToken.ts
+      file: ./src/mappings/rebasingTokenTemplate.ts
   - kind: ethereum/contract
     name: AccessControlledOffchainAggregatorTemplate
     network: mainnet
@@ -132,7 +131,7 @@ templates:
       abi: AccessControlledOffchainAggregator
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Transfer
@@ -146,4 +145,4 @@ templates:
       eventHandlers:
         - event: NewTransmission(indexed uint32,int192,address,int192[],bytes,bytes32)
           handler: handleNewTransmission
-      file: ./src/mappings/accessControlledOffchainAggregator.ts
+      file: ./src/mappings/accessControlledOffchainAggregatorTemplate.ts

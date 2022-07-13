@@ -1,0 +1,14 @@
+{
+  "mainnet": {
+    "BondFactory": {
+      "address": "0x019fa32d71bb96922695c6cdea33774fdeb04ac0",
+      "startBlock": 13779573
+    }
+  },
+  "kovan": {
+    "BondFactory": {
+      "address": "0xcccadb93f162f7516ba7c046f74b628adf63e6d9",
+      "startBlock": 30709233
+    }
+  }
+}

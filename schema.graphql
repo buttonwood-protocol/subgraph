@@ -1,6 +1,6 @@
 type Factory @entity {
   id: ID!
-  # number of pools created
+  # number of bonds created
   bondCount: BigInt!
 }
 
@@ -43,11 +43,13 @@ type Bond @entity {
   # Deposit limit of the bond
   depositLimit: BigInt!
   # address of the owner
-  owners: [String]!
+  owner: String!
   # reference to the collateral token
   collateral: Token!
   # The tranches and ratios in a list
-  tranches: [Tranche]!
+  tranches: [Tranche!]!
+  # The fee collected by bond owner
+  feeBps: BigInt!
   # date of maturity as a unix timestamp
   maturityDate: BigInt!
   # date bond was matured as a unix timestamp

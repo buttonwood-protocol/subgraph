@@ -5,7 +5,7 @@
     "codegen": "graph codegen",
     "build": "graph build --network mainnet",
     "build-kovan": "graph build --network kovan",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ buttonwood/subgraph",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ buttonwood-protocol/tranche",
     "deploy-kovan": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ fiddlekins/tranche-kovan",
     "create-local": "graph create --node http://localhost:8020/ buttonwood/subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ buttonwood/subgraph",

@@ -165,6 +165,35 @@ export function updateBondAfterRebase(bondId: string): void {
     tranche.save();
   }
   bond.save();
+  updateSimulatedTrancheCollateral(bond);
+}
+
+export function updateSimulatedTrancheCollateral(bond: Bond): void {
+  const tranches = bond.tranches;
+  let collateralRemaining = bond.totalCollateral;
+  for (let trancheIndex = 0; trancheIndex < tranches.length; trancheIndex++) {
+    const trancheId = tranches[trancheIndex];
+    const tranche = fetchTranche(trancheId);
+    if (bond.isMature) {
+      tranche.totalCollateralSimulated = tranche.totalCollateral;
+    } else {
+      const trancheSupply = fetchToken(tranche.token).totalSupply;
+      if (collateralRemaining.lt(trancheSupply)) {
+        tranche.totalCollateralSimulated = collateralRemaining;
+        collateralRemaining = ZERO_BI;
+      } else {
+        if (trancheIndex < tranches.length - 1) {
+          // Senior tranches get paid up to 1:1
+          tranche.totalCollateralSimulated = trancheSupply;
+          collateralRemaining = collateralRemaining.minus(trancheSupply);
+        } else {
+          // Junior tranche gets all excess
+          tranche.totalCollateralSimulated = collateralRemaining;
+        }
+      }
+    }
+    tranche.save();
+  }
 }
 
 export function updateBond(bond: Bond): void {

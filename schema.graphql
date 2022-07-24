@@ -29,8 +29,10 @@ type Tranche @entity {
   ratio: BigInt!
   " index of this tranche, i.e. A-tranche is 0, B is 1 and so on "
   index: BigInt!
-  " The amount of collateral in this tranche for redemption "
+  " The amount of collateral held by the contract. Is 0 until bond is matured, and after that point will update with rebases and user redemptions "
   totalCollateral: BigInt!
+  " The amount of collateral the tranche would receive if the bond were to be matured at this point in time. Post maturity this is equal to totalCollateral "
+  totalCollateralSimulated: BigInt!
   " The amount of collateral in this tranche for redemption at time bond matured "
   totalCollateralAtMaturity: BigInt
   " token total supply at time bond matured "

@@ -6,27 +6,31 @@ import {
   Redeem,
   RedeemMature,
 } from '../../generated/templates/BondTemplate/BondController';
-import { fetchBond, matureBond, updateBond } from '../utils/bond';
+import { fetchBond, matureBond, updateBond, updateSimulatedTrancheCollateral } from '../utils/bond';
 
 export function handleDeposit(event: Deposit): void {
   const bond = fetchBond(event.address.toHexString());
   updateBond(bond);
+  updateSimulatedTrancheCollateral(bond);
 }
 
 export function handleRedeem(event: Redeem): void {
   const bond = fetchBond(event.address.toHexString());
   updateBond(bond);
+  updateSimulatedTrancheCollateral(bond);
 }
 
 export function handleRedeemMature(event: RedeemMature): void {
   const bond = fetchBond(event.address.toHexString());
   updateBond(bond);
+  updateSimulatedTrancheCollateral(bond);
 }
 
 export function handleMature(event: Mature): void {
   const bond = fetchBond(event.address.toHexString());
   updateBond(bond);
   matureBond(bond, event);
+  updateSimulatedTrancheCollateral(bond);
 }
 
 export function handleFeeUpdate(event: FeeUpdate): void {

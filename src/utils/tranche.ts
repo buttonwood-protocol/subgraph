@@ -16,6 +16,7 @@ export function createTranche(bondId: string, collateralId: string, trancheIndex
     tranche.token = trancheId;
     tranche.ratio = trancheResult.value.getRatio();
     tranche.totalCollateral = ERC20.bind(castToAddress(collateralId)).balanceOf(trancheAddress);
+    tranche.totalCollateralSimulated = tranche.totalCollateral;
     tranche.save();
     return tranche;
   } else {

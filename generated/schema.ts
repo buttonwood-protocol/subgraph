@@ -196,6 +196,15 @@ export class Tranche extends Entity {
     this.set("totalCollateral", Value.fromBigInt(value));
   }
 
+  get totalCollateralSimulated(): BigInt {
+    let value = this.get("totalCollateralSimulated");
+    return value!.toBigInt();
+  }
+
+  set totalCollateralSimulated(value: BigInt) {
+    this.set("totalCollateralSimulated", Value.fromBigInt(value));
+  }
+
   get totalCollateralAtMaturity(): BigInt | null {
     let value = this.get("totalCollateralAtMaturity");
     if (!value || value.kind == ValueKind.NULL) {

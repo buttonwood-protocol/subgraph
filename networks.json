@@ -10,5 +10,11 @@
       "address": "0x8c0D2e727bE5a421EE9cFf96A3cC4FCaf811424f",
       "startBlock": 30709846
     }
-  }
+  },
+  "goerli": {
+    "BondFactory": {
+      "address": "0xda5DbE504e7D532E4F8921B38E1F970D4b881BFB",
+      "startBlock": 7476901
+    }
+  },
 }

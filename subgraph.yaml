@@ -10,7 +10,6 @@ dataSources:
     network: mainnet
     source:
       abi: BondFactory
-      address: "0x019FA32d71Bb96922695C6cdeA33774Fdeb04Ac0"
       startBlock: 13779573
     mapping:
       kind: ethereum/events

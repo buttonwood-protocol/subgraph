@@ -16,6 +16,7 @@ import { ADDRESS_ZERO, ZERO_BI } from './constants';
 import { castToAddress } from './index';
 import { createToken, fetchToken } from './token';
 import { createTranche, fetchTranche } from './tranche';
+import { fetchCollateralToken } from './collateralToken';
 
 function fetchCollateralTokenAddress(bondAddress: Address): Address {
   let contract = BondController.bind(bondAddress);
@@ -126,15 +127,21 @@ export function createBond(bondAddress: Address, creatorAddress: Address): Bond 
   const collateralAddress = fetchCollateralTokenAddress(bondAddress);
   const collateral = fetchToken(collateralAddress.toHexString());
   bond.collateral = collateral.id;
+  bond.collateralSymbol = collateral.symbol;
+  fetchCollateralToken(collateral.id);
 
+  const tokenNamesSegments = [collateral.id, collateral.symbol];
   const tranches: string[] = [];
   for (let trancheIndex = 0; trancheIndex < fetchTrancheCount(bondAddress); trancheIndex++) {
     const tranche = createTranche(bondId, bond.collateral, trancheIndex);
-    createToken(tranche.id);
+    const trancheToken = createToken(tranche.id);
+    tokenNamesSegments.push(trancheToken.id);
+    tokenNamesSegments.push(trancheToken.symbol);
     tranches.push(tranche.id);
     TrancheTemplate.create(castToAddress(tranche.id));
   }
   bond.tranches = tranches;
+  bond.tokenNames = tokenNamesSegments.join('|');
 
   initialiseElasticTokenUpdaters(collateralAddress, bond.id);
 

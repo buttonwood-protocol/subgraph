@@ -66,6 +66,10 @@ type Bond @entity {
   totalCollateral: BigInt!
   " The amount of collateral locked in this bond at time bond matured "
   totalCollateralAtMaturity: BigInt
+  " This property facilitates searching by asset, using 'tokenNames_contains' to match Bond entities on substring matches. This field has the value of collateral and tranche asset addresses and symbols concatenated. "
+  tokenNames: String!
+  " This property facilitates sorting by collateral asset symbol "
+  collateralSymbol: String!
 }
 
 #
@@ -103,4 +107,15 @@ type AccountBalance @entity {
 
   " Hash of the last transaction that modified the balance "
   transaction: Bytes
+}
+
+#
+# This entity allows for efficient de-duped querying of what tokens are used as collateral
+#
+type CollateralToken @entity {
+  " Token address "
+  id: ID!
+
+  " The token entity "
+  token: Token!
 }

@@ -402,6 +402,24 @@ export class Bond extends Entity {
       this.set("totalCollateralAtMaturity", Value.fromBigInt(<BigInt>value));
     }
   }
+
+  get tokenNames(): string {
+    let value = this.get("tokenNames");
+    return value!.toString();
+  }
+
+  set tokenNames(value: string) {
+    this.set("tokenNames", Value.fromString(value));
+  }
+
+  get collateralSymbol(): string {
+    let value = this.get("collateralSymbol");
+    return value!.toString();
+  }
+
+  set collateralSymbol(value: string) {
+    this.set("collateralSymbol", Value.fromString(value));
+  }
 }
 
 export class Account extends Entity {
@@ -552,5 +570,46 @@ export class AccountBalance extends Entity {
     } else {
       this.set("transaction", Value.fromBytes(<Bytes>value));
     }
+  }
+}
+
+export class CollateralToken extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save CollateralToken entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type CollateralToken must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("CollateralToken", id.toString(), this);
+    }
+  }
+
+  static load(id: string): CollateralToken | null {
+    return changetype<CollateralToken | null>(store.get("CollateralToken", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value!.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
   }
 }

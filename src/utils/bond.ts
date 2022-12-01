@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */
 import { Address, BigInt, DataSourceContext } from '@graphprotocol/graph-ts';
+import { BondCreated } from '../../generated/BondFactory/BondFactory';
 import { BondController, Mature } from '../../generated/templates/BondTemplate/BondController';
 import { Bond } from '../../generated/schema';
 import {
@@ -112,14 +113,16 @@ function initialiseElasticTokenUpdaters(collateralAddress: Address, bondId: stri
   }
 }
 
-export function createBond(bondAddress: Address, creatorAddress: Address): Bond {
+export function createBond(event: BondCreated): Bond {
+  const bondAddress = event.params.newBondAddress;
   const bondId = bondAddress.toHexString();
   let bond = new Bond(bondId);
-  bond.creator = creatorAddress.toHexString();
+  bond.creator = event.params.creator.toHexString();
   bond.owner = bond.creator;
   bond.isMature = false;
   bond.totalDebt = ZERO_BI;
   bond.totalCollateral = ZERO_BI;
+  bond.startDate = event.block.timestamp;
   bond.maturityDate = fetchMaturityDate(bondAddress);
   bond.depositLimit = fetchDepositLimit(bondAddress);
   bond.feeBps = ZERO_BI;

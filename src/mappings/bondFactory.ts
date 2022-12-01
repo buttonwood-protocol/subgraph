@@ -23,6 +23,6 @@ export function handleBondCreated(event: BondCreated): void {
   factory.save();
 
   const bondAddress = event.params.newBondAddress;
-  createBond(bondAddress, event.params.creator);
+  createBond(event);
   BondTemplate.create(bondAddress);
 }

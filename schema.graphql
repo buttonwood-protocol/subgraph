@@ -52,7 +52,9 @@ type Bond @entity {
   tranches: [Tranche!]!
   " The fee collected by bond owner "
   feeBps: BigInt!
-  " date of maturity as a unix timestamp "
+  " The unix timestamp when this bond was created "
+  startDate: BigInt!
+  " date of when bond can first be matured as a unix timestamp "
   maturityDate: BigInt!
   " date bond was matured as a unix timestamp "
   maturedDate: BigInt

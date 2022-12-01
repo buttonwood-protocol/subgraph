@@ -316,6 +316,15 @@ export class Bond extends Entity {
     this.set("feeBps", Value.fromBigInt(value));
   }
 
+  get startDate(): BigInt {
+    let value = this.get("startDate");
+    return value!.toBigInt();
+  }
+
+  set startDate(value: BigInt) {
+    this.set("startDate", Value.fromBigInt(value));
+  }
+
   get maturityDate(): BigInt {
     let value = this.get("maturityDate");
     return value!.toBigInt();

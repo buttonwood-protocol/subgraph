@@ -1,5 +1,5 @@
 import { Address } from '@graphprotocol/graph-ts';
 
 export const acceptedFactoryAddresses = [
-  Address.fromString('0xdbb8717d53d03e5dbb979540b6a85c65770f0709')
+  Address.fromString('0x23052d2DE04dA53c742aB8175f1De94b3d335d51')
 ];

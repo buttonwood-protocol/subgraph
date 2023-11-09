@@ -19,7 +19,7 @@ import { createToken, fetchToken } from './token';
 import { createTranche, fetchTranche } from './tranche';
 import { fetchCollateralToken } from './collateralToken';
 
-function fetchCollateralTokenAddress(bondAddress: Address): Address {
+export function fetchCollateralTokenAddress(bondAddress: Address): Address {
   let contract = BondController.bind(bondAddress);
 
   let collateralTokenResult = contract.try_collateralToken();
